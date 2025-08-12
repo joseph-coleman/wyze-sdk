@@ -22,39 +22,49 @@ class DeviceModels(object):
          com.HLApi.Obj.BindableDevice
     """
 
-    CAMERA_V1 = ['WYZEC1']
-    CAMERA_V2 = ['WYZEC1-JZ']
-    CAMERA_V3 = ['WYZE_CAKP2JFUS']
-    CAMERA_OUTDOOR = ['WVOD1']
-    CAMERA_OUTDOOR_V2 = ['HL_WCO2']
+    CAMERA_V1 = ["WYZEC1"]
+    CAMERA_V2 = ["WYZEC1-JZ"]
+    CAMERA_V3 = ["WYZE_CAKP2JFUS"]
+    CAMERA_OUTDOOR = ["WVOD1"]
+    CAMERA_OUTDOOR_V2 = ["HL_WCO2"]
+    CAMERA_OG = ["WYZECGS"]
+    CAMERA_OG_V2 = ["GW_GC1"]
 
-    LOCK = ['YD.LO1']
-    LOCK_GATEWAY = ['YD.GW1']
-    THERMOSTAT = ['CO_EA1']
-    THERMOSTAT_ROOM_SENSOR = ['CO_TH1']
-    CONTACT_SENSOR = ['DWS3U', 'DWS2U']
-    MOTION_SENSOR = ['PIR3U', 'PIR2U']
-    VACUUM = ['JA_RO2']
-    CAMERA = CAMERA_V1 + CAMERA_V2 + CAMERA_V3 + CAMERA_OUTDOOR + CAMERA_OUTDOOR_V2
-    SCALE_ = ['JA.SC', 'JA.SC2']
-    SCALE_S = ['WL_SC2']
-    SCALE_X = ['WL_SC3']
+    LOCK = ["YD.LO1"]
+    LOCK_GATEWAY = ["YD.GW1"]
+    THERMOSTAT = ["CO_EA1"]
+    THERMOSTAT_ROOM_SENSOR = ["CO_TH1"]
+    CONTACT_SENSOR = ["DWS3U", "DWS2U"]
+    MOTION_SENSOR = ["PIR3U", "PIR2U"]
+    VACUUM = ["JA_RO2"]
+    CAMERA = (
+        CAMERA_V1
+        + CAMERA_V2
+        + CAMERA_V3
+        + CAMERA_OUTDOOR
+        + CAMERA_OUTDOOR_V2
+        + CAMERA_OG
+        + CAMERA_OG_V2
+    )
+    SCALE_ = ["JA.SC", "JA.SC2"]
+    SCALE_S = ["WL_SC2"]
+    SCALE_X = ["WL_SC3"]
     SCALE = SCALE_ + SCALE_S + SCALE_X
-    WATCH = ['RA.WP1', 'RY.WA1']
-    BAND = ['RY.HP1']
+    WATCH = ["RA.WP1", "RY.WA1"]
+    BAND = ["RY.HP1"]
 
-    BULB_WHITE = ['WLPA19']
-    BULB_WHITE_V2 = ['HL_HWB2']
-    LIGHT_STRIP_PRO = ['HL_LSLP']
-    LIGHT_STRIP = ['HL_LSL'] + LIGHT_STRIP_PRO
-    MESH_BULB = ['WLPA19C'] + LIGHT_STRIP
+    BULB_WHITE = ["WLPA19"]
+    BULB_WHITE_V2 = ["HL_HWB2"]
+    LIGHT_STRIP_PRO = ["HL_LSLP"]
+    LIGHT_STRIP = ["HL_LSL"] + LIGHT_STRIP_PRO
+    MESH_BULB = ["WLPA19C"] + LIGHT_STRIP
 
     BULB = BULB_WHITE + BULB_WHITE_V2 + MESH_BULB
 
-    OUTDOOR_PLUG = ['WLPPO', 'WLPPO-SUB']
-    PLUG = ['WLPP1', 'WLPP1CFH'] + OUTDOOR_PLUG
+    OUTDOOR_PLUG = ["WLPPO", "WLPPO-SUB"]
+    PLUG = ["WLPP1", "WLPP1CFH"] + OUTDOOR_PLUG
 
-    SWITCH = ['LD_SS1']
+    SWITCH = ["LD_SS1"]
 
 
 class Product(object):
@@ -73,7 +83,7 @@ class Product(object):
         *,
         type: Optional[str] = None,
         model: Optional[str] = None,
-        logo_url: Optional[str] = None
+        logo_url: Optional[str] = None,
     ):
         self._type = type
         self._model = model
@@ -97,12 +107,7 @@ class Timezone(object):
     The timezone data associated with a device.
     """
 
-    def __init__(
-        self,
-        *,
-        offset: Optional[str] = None,
-        name: Optional[str] = None
-    ):
+    def __init__(self, *, offset: Optional[str] = None, name: Optional[str] = None):
         self._offset = offset
         self._name = name
 
@@ -150,7 +155,9 @@ class DeviceProp(object):
                         value = self._definition._type(value)
                 except ValueError:
                     self.logger.warning(f"def {self._definition.pid}")
-                    self.logger.warning(f"could not cast value `{value}` into expected type {self._definition.type}")
+                    self.logger.warning(
+                        f"could not cast value `{value}` into expected type {self._definition.type}"
+                    )
         if value == "":
             value = None
         self._value = value
@@ -194,24 +201,30 @@ class DeviceProp(object):
                 self.logger.debug(f"returning boolean value {self.value} as str")
                 return str(int(self.value if self.value else False))
         if isinstance(self.value, self.definition.api_type):
-            self.logger.debug(f"value {self.value} is already of configured api type {self.definition.api_type}, returning unchanged")
+            self.logger.debug(
+                f"value {self.value} is already of configured api type {self.definition.api_type}, returning unchanged"
+            )
             return self.value
         try:
-            self.logger.debug(f"value {self.value} is type {self.definition.type}, attempting to convert to {self.definition.api_type}")
+            self.logger.debug(
+                f"value {self.value} is type {self.definition.type}, attempting to convert to {self.definition.api_type}"
+            )
             return self.definition.api_type(self.value)
         except ValueError:
-            self.logger.warning(f"could not cast value `{self.value}` into expected api type {self.definition.api_type}")
+            self.logger.warning(
+                f"could not cast value `{self.value}` into expected api type {self.definition.api_type}"
+            )
 
     def __str__(self):
         return f"Property {self.definition.pid}: {self.value} [API value: {self.api_value}]"
 
     def to_json(self):
         to_return = {
-            'pid': self.definition.pid,
-            'pvalue': json.dumps(self.api_value),
+            "pid": self.definition.pid,
+            "pvalue": json.dumps(self.api_value),
         }
         if self.ts is not None:
-            to_return['ts'] = str(int(self.ts.replace(microsecond=0).timestamp()))
+            to_return["ts"] = str(int(self.ts.replace(microsecond=0).timestamp()))
         return to_return
 
 
@@ -291,28 +304,68 @@ class Device(JsonObject):
         type: Optional[str] = None,
         **others: dict,
     ):
-        self._type = type if type is not None else self._extract_attribute('product_type', others)
+        self._type = (
+            type
+            if type is not None
+            else self._extract_attribute("product_type", others)
+        )
         self._mac = mac
         self._nickname = nickname
         if conn_state is not None and conn_state_ts is not None:
-            self._is_online = DeviceProp(definition=DeviceProps.online_state(), value=conn_state, ts=conn_state_ts)
+            self._is_online = DeviceProp(
+                definition=DeviceProps.online_state(),
+                value=conn_state,
+                ts=conn_state_ts,
+            )
         else:
             self._is_online = self._extract_property(DeviceProps.online_state(), others)
         self._enr = enr
         self._push_switch = push_switch
-        self._firmware_version = firmware_ver if firmware_ver is not None else self._extract_attribute('firmware_ver', others)
-        self._hardware_version = hardware_ver if hardware_ver is not None else self._extract_attribute('hardware_ver', others)
+        self._firmware_version = (
+            firmware_ver
+            if firmware_ver is not None
+            else self._extract_attribute("firmware_ver", others)
+        )
+        self._hardware_version = (
+            hardware_ver
+            if hardware_ver is not None
+            else self._extract_attribute("hardware_ver", others)
+        )
         if parent_device_mac is not None:
             self._parent_device = {"mac": parent_device_mac, "enr": parent_device_enr}
-        self._product = Product(**{
-            "logo_url": product_model_logo_url if product_model_logo_url is not None else self._extract_attribute('product_model_logo_url', others),
-            "model": product_model if product_model is not None else self._extract_attribute('product_model', others),
-            "type": product_type if product_type is not None else self._extract_attribute('product_type', others),
-        })
-        self._timezone = Timezone(**{
-            "offset": timezone_gmt_offset if timezone_gmt_offset is not None else self._extract_attribute('timezone_gmt_offset', others),
-            "name": timezone_name if timezone_name is not None else self._extract_attribute('timezone_name', others),
-        })
+        self._product = Product(
+            **{
+                "logo_url": (
+                    product_model_logo_url
+                    if product_model_logo_url is not None
+                    else self._extract_attribute("product_model_logo_url", others)
+                ),
+                "model": (
+                    product_model
+                    if product_model is not None
+                    else self._extract_attribute("product_model", others)
+                ),
+                "type": (
+                    product_type
+                    if product_type is not None
+                    else self._extract_attribute("product_type", others)
+                ),
+            }
+        )
+        self._timezone = Timezone(
+            **{
+                "offset": (
+                    timezone_gmt_offset
+                    if timezone_gmt_offset is not None
+                    else self._extract_attribute("timezone_gmt_offset", others)
+                ),
+                "name": (
+                    timezone_name
+                    if timezone_name is not None
+                    else self._extract_attribute("timezone_name", others)
+                ),
+            }
+        )
         self._user_role = user_role
 
     @property
@@ -359,7 +412,9 @@ class Device(JsonObject):
     def is_online(self) -> bool:
         return False if self._is_online is None else self._is_online.value
 
-    def _extract_property(self, prop_def: Union[str, PropDef], others: Union[dict, Sequence[dict]]) -> DeviceProp:
+    def _extract_property(
+        self, prop_def: Union[str, PropDef], others: Union[dict, Sequence[dict]]
+    ) -> DeviceProp:
         if isinstance(prop_def, str):
             prop_def = PropDef(pid=prop_def)
 
@@ -370,20 +425,26 @@ class Device(JsonObject):
                 if key == prop_def.pid:
                     self.logger.debug(f"returning new DeviceProp with value {value}")
                     return DeviceProp(definition=prop_def, value=value)
-            if 'data' in others and 'property_list' in others['data']:
+            if "data" in others and "property_list" in others["data"]:
                 self.logger.debug("found non-empty data property_list")
-                return self._extract_property(prop_def=prop_def, others=others['data'])
-            if 'props' in others and others['props']:
+                return self._extract_property(prop_def=prop_def, others=others["data"])
+            if "props" in others and others["props"]:
                 self.logger.debug("found non-empty props")
-                return self._extract_property(prop_def=prop_def, others=others['props'])
-            if 'property_list' in others and others['property_list']:
+                return self._extract_property(prop_def=prop_def, others=others["props"])
+            if "property_list" in others and others["property_list"]:
                 self.logger.debug("found non-empty property_list")
-                return self._extract_property(prop_def=prop_def, others=others['property_list'])
-            if 'device_params' in others and others['device_params']:
+                return self._extract_property(
+                    prop_def=prop_def, others=others["property_list"]
+                )
+            if "device_params" in others and others["device_params"]:
                 self.logger.debug("found non-empty device_params")
-                return self._extract_property(prop_def=prop_def, others=others['device_params'])
+                return self._extract_property(
+                    prop_def=prop_def, others=others["device_params"]
+                )
         else:
-            self.logger.debug(f"extracting property {prop_def.pid} from {others.__class__} {others}")
+            self.logger.debug(
+                f"extracting property {prop_def.pid} from {others.__class__} {others}"
+            )
             for value in others:
                 self.logger.debug(f"value {value}")
                 if "pid" in value and prop_def.pid == value["pid"]:
@@ -393,7 +454,7 @@ class Device(JsonObject):
     @classmethod
     def remove_model_prefix(cls, text: str, model: str) -> str:
         if text.startswith(model):
-            return text[len(model):]
+            return text[len(model) :]
         return text
 
 
@@ -401,9 +462,11 @@ class AbstractNetworkedDevice(Device, metaclass=ABCMeta):
 
     @property
     def attributes(self) -> Set[str]:
-        return super().attributes.union({
-            "ip",
-        })
+        return super().attributes.union(
+            {
+                "ip",
+            }
+        )
 
     def __init__(
         self,
@@ -413,9 +476,9 @@ class AbstractNetworkedDevice(Device, metaclass=ABCMeta):
         **others: dict,
     ):
         super().__init__(type=type, **others)
-        self._ip = ip if ip is not None else super()._extract_attribute('ip', others)
+        self._ip = ip if ip is not None else super()._extract_attribute("ip", others)
         if not self._ip:
-            self._ip = super()._extract_attribute('ipaddr', others)
+            self._ip = super()._extract_attribute("ipaddr", others)
 
     @property
     def ip(self) -> str:
@@ -426,10 +489,12 @@ class AbstractWirelessNetworkedDevice(AbstractNetworkedDevice, metaclass=ABCMeta
 
     @property
     def attributes(self) -> Set[str]:
-        return super().attributes.union({
-            "rssi",
-            "ssid",
-        })
+        return super().attributes.union(
+            {
+                "rssi",
+                "ssid",
+            }
+        )
 
     def __init__(
         self,
@@ -440,8 +505,12 @@ class AbstractWirelessNetworkedDevice(AbstractNetworkedDevice, metaclass=ABCMeta
         **others: dict,
     ):
         super().__init__(type=type, **others)
-        self._rssi = rssi if rssi is not None else super()._extract_attribute('rssi', others)
-        self._ssid = ssid if ssid is not None else super()._extract_attribute('ssid', others)
+        self._rssi = (
+            rssi if rssi is not None else super()._extract_attribute("rssi", others)
+        )
+        self._ssid = (
+            ssid if ssid is not None else super()._extract_attribute("ssid", others)
+        )
 
     @property
     def rssi(self) -> str:
