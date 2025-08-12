@@ -4,7 +4,6 @@ import logging
 from datetime import datetime
 from enum import Enum
 from typing import Any, Optional, Sequence, Set, Tuple, Union
-from blackboxprotobuf import TypeDefDict
 
 from wyze_sdk.errors import WyzeObjectFormationError
 from wyze_sdk.models import (JsonObject, PropDef, epoch_to_datetime,
@@ -469,7 +468,7 @@ class VacuumMap(JsonObject):
     """
 
     @classmethod
-    def _robot_map_proto(cls) -> TypeDefDict:
+    def _robot_map_proto(cls) -> dict:
         return {
             # Java type int
             #  0 == REAL_TIME
@@ -728,9 +727,12 @@ class VacuumMap(JsonObject):
                 raise WyzeObjectFormationError('could not decode map blob')
 
             decompressed = zlib.decompress(compressed)
-            
+
+            # add the protobuf definition to the known types
+            blackboxprotobuf.known_messages['robot_map'] = VacuumMap._robot_map_proto()
+
             # for some reason we have to re-encode and then re-decode the bytes
-            map, typedef = blackboxprotobuf.protobuf_to_json(base64.b64decode(base64.b64encode(decompressed)), message_type=VacuumMap._robot_map_proto())
+            map, typedef = blackboxprotobuf.protobuf_to_json(base64.b64decode(base64.b64encode(decompressed)), 'robot_map')
 
             map = json.loads(map)
             for key, value in map.items():

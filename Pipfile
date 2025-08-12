@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 wyze-sdk = {path = "."}
 requests = "*"
-bbpb = "*"
+blackboxprotobuf = "*"
 mintotp = "*"
 pycryptodomex = "*"
 
@@ -16,4 +16,4 @@ isort = "*"
 sphinx = "*"
 
 [requires]
-python_version = "3.13.2"
+python_version = "3.8"
