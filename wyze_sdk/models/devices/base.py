@@ -26,9 +26,11 @@ class DeviceModels(object):
     CAMERA_V2 = ["WYZEC1-JZ"]
     CAMERA_V3 = ["WYZE_CAKP2JFUS"]
     CAMERA_OUTDOOR = ["WVOD1"]
-    CAMERA_OUTDOOR_V2 = ["HL_WCO2"]
+    CAMERA_OUTDOOR_V2 = ["GW_GC1"]
+    CAMERA_OUTDOOR_V3 = ["HL_WCO2"]
     CAMERA_OG = ["WYZECGS"]
-    CAMERA_OG_V2 = ["GW_GC1"]
+    CAMERA_BELL = ["WYZEDB3"]  # Doorbell camera
+    CAMERA_PAN = ["WYZECP1_JEF"]  # Old pan camera
 
     LOCK = ["YD.LO1"]
     LOCK_GATEWAY = ["YD.GW1"]
@@ -43,12 +45,15 @@ class DeviceModels(object):
         + CAMERA_V3
         + CAMERA_OUTDOOR
         + CAMERA_OUTDOOR_V2
+        + CAMERA_OUTDOOR_V3
         + CAMERA_OG
-        + CAMERA_OG_V2
+        + CAMERA_BELL
+        + CAMERA_PAN
     )
     SCALE_ = ["JA.SC", "JA.SC2"]
     SCALE_S = ["WL_SC2"]
     SCALE_X = ["WL_SC3"]
+    # SCALE_X = ['WL_SC22135']  # placeholder
     SCALE = SCALE_ + SCALE_S + SCALE_X
     WATCH = ["RA.WP1", "RY.WA1"]
     BAND = ["RY.HP1"]
